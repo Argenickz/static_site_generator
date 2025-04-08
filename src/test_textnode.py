@@ -1,27 +1,23 @@
 import unittest
-
-# This test creates two TextNode objects with the same properties and asserts that they are equal. Notice the missing 'url' argument which should have a default value of Nonde. If you run your test with ./test.sh, you should see that the test passes.
-
 from textnode import TextNode, TextType
 
+# This test creates two TextNode objects and asserts that they are equal. Notice the missing url argument which should default to None. If you run the test with ./test.sh you should see that the test passes.
+# Note! For the text to be discoveret bhy the unittest they need to be prefixed with the word 'test_'.
 class TestTextNode(unittest.TestCase):
-    # Todo When creating a test method the naming of the methods in your TestTextNode matter. When you're working with Python 'unittest' framework, for the framework to discover and execute  your unit test methods they need to start with the prefix 'test_'
     def test_eq(self):
-        node = TextNode("This is a text node", TextType.BOLD)
-        node2 = TextNode("This is a text node", TextType.BOLD)
+        node = TextNode("This is a text node", TextType.bold)
+        node2 = TextNode("This is a text node", TextType.bold)
         self.assertEqual(node, node2)
 
-    def test_more_eq(self):
-        node3 = TextNode("Testing equality of nodes", TextType.LINK, "https://www.test.com")
-        node4 = TextNode("Testing equality of nodes", TextType.LINK, "https://www.test.com")
+    def test_eq_2(self):
+        node3 = TextNode("this is crazy", TextType.italic)
+        node4 = TextNode("this is crazy", TextType.italic)
         self.assertEqual(node3, node4)
     
-    def test_not_equal(self):
-        node5 = TextNode("Equally guilty!", TextType.IMAGE, )
-        node6 = TextNode("Equally guilty!", TextType.ITALIC)
+    def test_not_the_same(self):
+        node5 = TextNode("We're not the same you and I", TextType.text, "www.notthesame.com")
+        node6 = TextNode("Not the same at all", TextType.bold)
         self.assertNotEqual(node5, node6)
-
 
 if __name__ == "__main__":
     unittest.main()
-

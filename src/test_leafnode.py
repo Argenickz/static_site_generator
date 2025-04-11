@@ -28,9 +28,31 @@ class TestParentNode(unittest.TestCase):
         child_node = LeafNode("span", "child")
         parent_node = ParentNode("div", [child_node])
         self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
-# Todo Write the rest of the tests tomorrow but submmit tonight and commit/push.
 
+        parent_node1 = ParentNode("a", [LeafNode('p', 'this right here')], {"href": "https://www.test.com"})
+        self.assertEqual(parent_node1.to_html(), '<a href="https://www.test.com"><p>this right here</p></a>')
 
+        
+      
+
+    
+    def test_to_html_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<div><span><b>grandchild</b></span></div>",
+        )
+
+        # ParentNode expects the children parameter to be a list of nodes
+    def test_nested_parent_node(self):
+        nested_parent1 = LeafNode("div", "parent node one")
+        nested_parent2 = ParentNode("p", [nested_parent1])
+        parent_node = ParentNode("b", [nested_parent2])
+        self.assertNotEqual(parent_node.to_html(), 'whatever')
+
+        
 
 if __name__ == "__main__":
     unittest.main()

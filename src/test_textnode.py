@@ -1,5 +1,5 @@
 import unittest
-from textnode import TextNode, TextType
+from textnode import TextNode, TextType, text_node_to_html
 
 # This test creates two TextNode objects and asserts that they are equal. Notice the missing url argument which should default to None. If you run the test with ./test.sh you should see that the test passes.
 # Note! For the text to be discoveret bhy the unittest they need to be prefixed with the word 'test_'.
@@ -19,6 +19,20 @@ class TestTextNode(unittest.TestCase):
         node6 = TextNode("Not the same at all", TextType.bold)
         self.assertNotEqual(node5, node6)
 
+
+    def test_text(self):
+        node = TextNode("This is a text node", TextType.text)
+        html_node = text_node_to_html(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+        self.assertEqual(html_node.props, None)
+        self.assertEqual(text_node_to_html(TextNode("some anchor text", TextType.link, {'href': 'www.damn.com'})).to_html(), '<a href="www.damn.com">some anchor text</a>'  )
+    
+    def test_tags(self):
+        node = TextNode("some italic text", TextType.italic)
+        html_node = text_node_to_html(node)
+        self.assertEqual(html_node.tag, "i")
+        
 if __name__ == "__main__":
     unittest.main()
 

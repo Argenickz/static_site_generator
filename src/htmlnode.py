@@ -20,6 +20,8 @@ class HTMLNode:
     # Notice the leading spaces before href and before target. This is important. HTML attributes are always separated by spaces.
     def props_to_html(self):
         # List comprehension instead of a loop
+        if self.props == None:
+            return ''
         prop = "".join(f' {prop}="{self.props[prop]}"' for prop in self.props)
         return prop
 
@@ -44,14 +46,14 @@ class LeafNode(HTMLNode):
         # Otherwise, it should render an HTML tag.
     
     def to_html(self):
-        if len(self.value) == 0:
+        if self.value == None:
             raise ValueError("All leaf nodes must have a value")
         if self.tag == None:
             # print(self.value)
             return self.value
         # Check if there is a dictionary in self.props
         if self.props != None:
-            print(f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>")
+            # print(f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>")
 
             return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
         
@@ -75,39 +77,23 @@ class ParentNode(HTMLNode):
 # 3. Otherwise return a string representing the HTML tag of the node and its children. This should be a recursive method (each recursion being called on a nested child node). I iterated over all the children and called 'to_html'  on each, concatenating the result and injecting them between the opening and closing tags of the parent.
     def to_html(self):
         if self.tag == 'None':
-            raise ValueError("The tag is required")
+            raise ValueError("Tag is needed for the parent")
         elif self.children == None:
-            print(f'this is the children: {self.children}')
-            raise ValueError("Children is required")
-        # Create a variable to accumulate the children string, create a recursion that iterates ober the children and call 'to_html' on each accumulating the result in said variable, return the string between the opening and closing parent tags.
+            raise ValueError("You need to pass in the children as a list")
+       
         # Todo This works!
-        # If there is something I would to different about this recursion is maybe "".join(node.to_html() for node in self.children)
-        # A little list comprehension instead of a loop that recurses on the self.child and applies to_html of the child class.
-        result = "".join(child.to_html() for child in self.children)
+       
+        # A little list comprehension instead of a loop that recurses on the self.children and applies to_html of the child class.
+        child = "".join(child.to_html() for child in self.children)
        
     #    Todo, one miss I had that I would have caught had I run more tests is not adding props to the return... add them tomorrow. props goes inside the first tag e.g '<a href:link https://www.google.com> 'whatever' </a>
-        print(f"<{self.tag}>{result}</{self.tag}>")
-        return f"<{self.tag}>{result}</{self.tag}>"
+        print(f"<{self.tag}{HTMLNode(props=self.props).props_to_html()}>{child}</{self.tag}>")
+        return f"<{self.tag}{HTMLNode(props=self.props).props_to_html()}>{child}</{self.tag}>"
 
 
         
 
-node = ParentNode(
-    "p",
-    [
-        LeafNode("b", "Bold text"),
-        LeafNode(None, "Normal text"),
-        LeafNode("i", "italic text"),
-        LeafNode(None, "Normal text"),
-    ],
-).to_html()
 
 
 
     
-# leaf = [LeafNode("b", "Bold text"),
-#         LeafNode(None, "Normal text"),
-#         LeafNode("i", "italic text"),
-#         LeafNode(None, "Normal text"),]
-# for x in leaf:
-#     x.to_html()

@@ -26,13 +26,17 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(html_node.tag, None)
         self.assertEqual(html_node.value, "This is a text node")
         self.assertEqual(html_node.props, None)
-        self.assertEqual(text_node_to_html(TextNode("some anchor text", TextType.link, {'href': 'www.damn.com'})).to_html(), '<a href="www.damn.com">some anchor text</a>'  )
+        self.assertEqual(text_node_to_html(TextNode("some anchor text", TextType.link, 'www.damn.com')).to_html(), '<a href="www.damn.com">some anchor text</a>'  )
     
     def test_tags(self):
         node = TextNode("some italic text", TextType.italic)
         html_node = text_node_to_html(node)
         self.assertEqual(html_node.tag, "i")
-        
+
+    def test_image_link(self):
+        node = TextNode("this is the text", TextType.image, ['www.image.com', 'the image'])
+        html_node = text_node_to_html(node)
+
 if __name__ == "__main__":
     unittest.main()
 

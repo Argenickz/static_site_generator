@@ -58,9 +58,11 @@ def text_node_to_html(text_node):
         case TextType.code:
             return LeafNode("code", text_node.text)
         case TextType.link:
-            return LeafNode("a", text_node.text, text_node.url)   
+            return LeafNode("a", text_node.text, {'href': text_node.url})   
         case TextType.image:
-            return LeafNode("img", text_node.text, text_node.url)
+            
+            # Passed the text_node as index to get two values
+            return LeafNode("img", "", {"src":text_node.url, "alt": text_node.text})
         case _:
             return 'not a match'
         
@@ -73,8 +75,73 @@ def text_node_to_html(text_node):
 # print(text_node_to_html(TextNode("text in bold tags", TextType.bold)))
 # print(text_node_to_html(TextNode("text in italic tags", TextType.italic)))
 # print(text_node_to_html(TextNode("text in code tags", TextType.code)))
-print(text_node_to_html(TextNode("some anchor text", TextType.link, {'href': 'www.damn.com'})).to_html())
-# print(text_node_to_html(TextNode("", TextType.image, {'src': 'www.damn.com', 'alt': 'alternative image text'})))
+# print(text_node_to_html(TextNode("some anchor text", TextType.link, 'www.yes.com')).to_html())
+
+# passed in the url as a list to get the index values
+# print(text_node_to_html(TextNode("the iimage test", TextType.image, 'www.image.com')).to_html())
 
 
 
+# Todo boots pseudo code:
+"""
+Ah, I see you're working on the split_nodes_delimiter function. Let me help you work through some issues I notice:
+
+When checking for text_type.text, you're using lowercase, but it should likely be TextType.TEXT (uppercase).
+
+Your approach to finding the delimiter indices is problematic. The index() method will throw an error if the delimiter isn't found, and using index(f"{delimiter} ") assumes the delimiter is always followed by a space, which isn't always true.
+
+You're checking if the delimiter is in the accepted list, but this check should happen before you try to process the node.
+
+Your approach with code_block and splitting by delimiter needs refinement. Let's think about this differently:
+
+What if we consider splitting the text this way:
+
+Find pairs of delimiters (start and end)
+Split the text into three parts: before the first delimiter, between delimiters, and after the second delimiter
+Create appropriate TextNodes for each part
+How would you handle a case like: "This is text with a code block word"?
+
+
+
+Boots
+maybe using split(delimiter, maxsplit=1)
+
+Boots
+That's a clever approach to consider! Using split(delimiter, maxsplit=1) will split the string at the first occurrence of the delimiter, which could help you get the "before" part and "rest" of the string.
+
+Let's think through the steps:
+
+If we find the first delimiter and split at that point, we get:
+
+"This is text with a " (before part)
+"code block` word" (rest of the string)
+Then we need to find the closing delimiter in the "rest" part and split again:
+
+"code block" (the content we want to mark as code)
+" word" (after part)
+Let's try to refactor your approach. Consider this pseudocode:
+
+for each node in old_nodes:
+    if node is not text type:
+        add node to new_nodes as-is
+        continue
+    
+    text = node's text
+    
+    while delimiter exists in text:
+        split text at first delimiter into before_part and rest
+        if delimiter doesn't exist in rest:
+            raise exception (no closing delimiter)
+        
+        split rest at first delimiter into content and after_part
+        
+        add TextNode(before_part, TextType.TEXT) to new_nodes
+        add TextNode(content, text_type) to new_nodes
+        
+        text = after_part (continue processing the remaining text)
+    
+    if text is not empty:
+        add TextNode(text, TextType.TEXT) to new_nodes
+
+This approach handles one pair of delimiters at a time, processes it, and then continues with the remaining text. What do you think of this approach?
+"""
